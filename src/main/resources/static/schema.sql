@@ -6,18 +6,18 @@ CREATE TABLE IF NOT EXISTS users (
     cognito_id CHAR(36),
     name VARCHAR(100),
     email VARCHAR(100) NOT NULL,
-    created_by CHAR(36),
+    created_by CHAR(36) NOT NULL,
+    modified_by CHAR(36) NOT NULL,
     created_on DATETIME DEFAULT CURRENT_TIMESTAMP,
-    modified_by CHAR(36),
     modified_on DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS user_profiles (
 	profile_id CHAR(36) PRIMARY KEY NOT NULL DEFAULT (UUID()),
     user_id CHAR(36) UNIQUE,
-    created_by CHAR(36),
+    created_by CHAR(36) NOT NULL,
+    modified_by CHAR(36) NOT NULL,
     created_on DATETIME DEFAULT CURRENT_TIMESTAMP,
-    modified_by CHAR(36),
     modified_on DATETIME DEFAULT CURRENT_TIMESTAMP,
 
 
@@ -29,9 +29,9 @@ CREATE TABLE IF NOT EXISTS notes (
 	note_id CHAR(36) PRIMARY KEY NOT NULL DEFAULT (UUID()),
     title VARCHAR(50),
     content VARCHAR(1000),
-    created_by CHAR(36),
+    created_by CHAR(36) NOT NULL,
+    modified_by CHAR(36) NOT NULL,
     created_on DATETIME DEFAULT CURRENT_TIMESTAMP,
-    modified_by CHAR(36),
     modified_on DATETIME DEFAULT CURRENT_TIMESTAMP,
 
 	CONSTRAINT fk_notes_created_by FOREIGN KEY (created_by) REFERENCES users(user_id),
@@ -39,15 +39,15 @@ CREATE TABLE IF NOT EXISTS notes (
 );
 
 CREATE TABLE IF NOT EXISTS clocks (
-	clock_id CHAR(36) PRIMARY KEY,
+	clock_id CHAR(36) PRIMARY KEY NOT NULL DEFAULT (UUID()),
     started_on DATETIME,
     ended_on DATETIME,
     completed BOOLEAN GENERATED ALWAYS AS (
         TIMESTAMPDIFF(MINUTE, started_on, ended_on) >= 30
     ) STORED,
-    created_by CHAR(36),
+    created_by CHAR(36) NOT NULL,
+    modified_by CHAR(36) NOT NULL,
     created_on DATETIME DEFAULT CURRENT_TIMESTAMP,
-    modified_by CHAR(36),
     modified_on DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_clocks_created_by FOREIGN KEY (created_by) REFERENCES users(user_id),
@@ -55,12 +55,12 @@ CREATE TABLE IF NOT EXISTS clocks (
 );
 
 CREATE TABLE IF NOT EXISTS quotes (
-	quote_id CHAR(36) PRIMARY KEY,
+	quote_id CHAR(36) PRIMARY KEY NOT NULL DEFAULT (UUID()),
     author VARCHAR(50),
     quote VARCHAR(1000),
-	created_by CHAR(36),
+	created_by CHAR(36) NOT NULL,
+    modified_by CHAR(36) NOT NULL,
     created_on DATETIME DEFAULT CURRENT_TIMESTAMP,
-    modified_by CHAR(36),
     modified_on DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_quotes_created_by FOREIGN KEY (created_by) REFERENCES users(user_id),
@@ -68,12 +68,12 @@ CREATE TABLE IF NOT EXISTS quotes (
 );
 
 CREATE TABLE IF NOT EXISTS emotions (
-	emotion_id CHAR(36) PRIMARY KEY,
+	emotion_id CHAR(36) PRIMARY KEY NOT NULL DEFAULT (UUID()),
     name VARCHAR(25),
     color CHAR(7),
-    created_by CHAR(36),
+    created_by CHAR(36) NOT NULL,
+    modified_by CHAR(36) NOT NULL,
     created_on DATETIME DEFAULT CURRENT_TIMESTAMP,
-    modified_by CHAR(36),
     modified_on DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_emotions_created_by FOREIGN KEY (created_by) REFERENCES users(user_id),
@@ -81,12 +81,12 @@ CREATE TABLE IF NOT EXISTS emotions (
 );
 
 CREATE TABLE IF NOT EXISTS mood_recordings(
-	mood_recording_id CHAR(36) PRIMARY KEY,
+	mood_recording_id CHAR(36) PRIMARY KEY NOT NULL DEFAULT (UUID()),
     emotion_id CHAR(36),
     recorded_at DATETIME,
-    created_by CHAR(36),
+    created_by CHAR(36) NOT NULL,
+    modified_by CHAR(36) NOT NULL,
     created_on DATETIME DEFAULT CURRENT_TIMESTAMP,
-    modified_by CHAR(36),
     modified_on DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_mood_recordings_created_by FOREIGN KEY (created_by) REFERENCES users(user_id),
@@ -94,14 +94,28 @@ CREATE TABLE IF NOT EXISTS mood_recordings(
 );
 
 CREATE TABLE IF NOT EXISTS authentication_logs(
-    authentication_id CHAR(36) PRIMARY KEY,
+    authentication_id CHAR(36) PRIMARY KEY NOT NULL DEFAULT (UUID()),
     user_id CHAR(36),
-    created_by CHAR(36),
+    created_by CHAR(36) NOT NULL,
+    modified_by CHAR(36) NOT NULL,
     created_on DATETIME DEFAULT CURRENT_TIMESTAMP,
-    modified_by CHAR(36),
     modified_on DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_authentication_logs_user_id FOREIGN KEY (user_id) REFERENCES users(user_id),
     CONSTRAINT fk_authentication_logs_created_by FOREIGN KEY (created_by) REFERENCES users(user_id),
     CONSTRAINT fk_authentication_logs_modified_by FOREIGN KEY (modified_by) REFERENCES users(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS learning_resources(
+	learning_resource_id CHAR(36) PRIMARY KEY NOT NULL DEFAULT (UUID()),
+    name VARCHAR(50),
+    url VARCHAR(100),
+    notes VARCHAR(500),
+    created_by CHAR(36) NOT NULL,
+    modified_by CHAR(36) NOT NULL,
+    created_on DATETIME DEFAULT CURRENT_TIMESTAMP,
+    modified_on DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_learning_resources_created_by FOREIGN KEY (created_by) REFERENCES users(user_id),
+    CONSTRAINT fk_learning_resources_modified_by FOREIGN KEY (modified_by) REFERENCES users(user_id)
 )
