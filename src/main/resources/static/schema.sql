@@ -92,3 +92,16 @@ CREATE TABLE IF NOT EXISTS mood_recordings(
     CONSTRAINT fk_mood_recordings_created_by FOREIGN KEY (created_by) REFERENCES users(user_id),
     CONSTRAINT fk_mood_recordings_modified_by FOREIGN KEY (modified_by) REFERENCES users(user_id)
 );
+
+CREATE TABLE IF NOT EXISTS authentication_logs(
+    authentication_id CHAR(36) PRIMARY KEY,
+    user_id CHAR(36),
+    created_by CHAR(36),
+    created_on DATETIME DEFAULT CURRENT_TIMESTAMP,
+    modified_by CHAR(36),
+    modified_on DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_authentication_logs_user_id FOREIGN KEY (user_id) REFERENCES users(user_id),
+    CONSTRAINT fk_authentication_logs_created_by FOREIGN KEY (created_by) REFERENCES users(user_id),
+    CONSTRAINT fk_authentication_logs_modified_by FOREIGN KEY (modified_by) REFERENCES users(user_id)
+)
